@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Pendaftaran Pegawai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    /* ── RESET & BASE ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:        #0d0d0d;
+      --paper:      #f5f0e8;
+      --accent:     #1a4a8a;
+      --accent-lt:  #2c6bc9;
+      --gold:       #c9993a;
+      --success:    #1a6b3a;
+      --danger:     #8a1a1a;
+      --border:     #c8bfaa;
+      --shadow:     rgba(13,13,13,0.12);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ── GRID BACKGROUND ──────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(26,74,138,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26,74,138,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* ── DECORATIVE CORNERS ───────────────────────────── */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; right: 0;
+      width: 280px; height: 280px;
+      background: radial-gradient(circle at top right, rgba(201,153,58,0.12), transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── OUTER WRAPPER ────────────────────────────────── */
+    .wrapper {
+      width: 100%;
+      max-width: 640px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── HEADER ───────────────────────────────────────── */
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      animation: fadeDown 0.7s ease both;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(26,74,138,0.08);
+      border: 1px solid rgba(26,74,138,0.2);
+      padding: 5px 14px;
+      border-radius: 2px;
+      margin-bottom: 1.2rem;
+    }
+
+    .badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.9rem, 4vw, 2.6rem);
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    h1 span {
+      color: var(--accent);
+      position: relative;
+    }
+
+    h1 span::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 0; right: 0;
+      height: 3px;
+      background: var(--gold);
+    }
+
+    .subtitle {
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      color: #5a5244;
+      font-weight: 300;
+      letter-spacing: 0.01em;
+    }
+
+    /* ── CARD ─────────────────────────────────────────── */
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2.5rem 2.5rem;
+      box-shadow:
+        0 2px 4px var(--shadow),
+        0 8px 32px rgba(13,13,13,0.07);
+      animation: fadeUp 0.7s 0.15s ease both;
+    }
+
+    /* ── SECTION DIVIDER ──────────────────────────────── */
+    .section-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── FORM GROUPS ──────────────────────────────────── */
+    .form-group {
+      margin-bottom: 1.4rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #3a3328;
+      margin-bottom: 0.45rem;
+      letter-spacing: 0.01em;
+    }
+
+    label .req {
+      color: var(--gold);
+      margin-left: 2px;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 3px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      color: var(--ink);
+      background: var(--paper);
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      outline: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus {
+      border-color: var(--accent-lt);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(44,107,201,0.12);
+    }
+
+    /* ── FILE DROP ZONE ───────────────────────────────── */
+    .file-section { margin-top: 2rem; }
+
+    .dropzone {
+      border: 2px dashed var(--border);
+      border-radius: 4px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+      background: var(--paper);
+    }
+
+    .dropzone:hover,
+    .dropzone.dragover {
+      border-color: var(--accent-lt);
+      background: rgba(26,74,138,0.04);
+    }
+
+    .dropzone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .dz-icon {
+      width: 44px; height: 44px;
+      margin: 0 auto 0.9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+
+    .dz-icon svg { width: 20px; height: 20px; }
+
+    .dz-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.3rem;
+    }
+
+    .dz-sub {
+      font-size: 0.75rem;
+      color: #7a6e5c;
+    }
+
+    /* ── FILE PREVIEW ─────────────────────────────────── */
+    .file-preview {
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(26,74,138,0.05);
+      border: 1px solid rgba(26,74,138,0.2);
+      border-radius: 3px;
+      padding: 0.75rem 1rem;
+      margin-top: 0.75rem;
+    }
+
+    .file-preview.show { display: flex; }
+
+    .file-thumb {
+      width: 44px; height: 44px;
+      border-radius: 3px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+    }
+
+    .file-info { flex: 1; min-width: 0; }
+    .file-name { font-size: 0.82rem; font-weight: 500; truncate: ellipsis; white-space: nowrap; overflow: hidden; }
+    .file-size { font-size: 0.72rem; color: #7a6e5c; }
+
+    .file-remove {
+      background: none; border: none; cursor: pointer;
+      color: var(--danger); padding: 4px; border-radius: 2px;
+      display: flex; align-items: center;
+    }
+
+    /* ── SUBMIT BUTTON ────────────────────────────────── */
+    .btn-submit {
+      width: 100%;
+      margin-top: 2rem;
+      padding: 0.9rem 1.5rem;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-submit:hover  { background: var(--accent-lt); box-shadow: 0 4px 16px rgba(26,74,138,0.3); }
+    .btn-submit:active { transform: scale(0.99); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* ── SPINNER ──────────────────────────────────────── */
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    /* ── ALERT / TOAST ────────────────────────────────── */
+    .alert {
+      margin-top: 1.25rem;
+      padding: 1rem 1.25rem;
+      border-radius: 3px;
+      font-size: 0.87rem;
+      display: none;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .alert.success {
+      display: block;
+      background: rgba(26,107,58,0.08);
+      border: 1px solid rgba(26,107,58,0.3);
+      color: var(--success);
+    }
+
+    .alert.error {
+      display: block;
+      background: rgba(138,26,26,0.07);
+      border: 1px solid rgba(138,26,26,0.25);
+      color: var(--danger);
+    }
+
+    .alert-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .url-box {
+      margin-top: 0.5rem;
+      background: rgba(26,107,58,0.06);
+      border: 1px solid rgba(26,107,58,0.2);
+      border-radius: 2px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+      word-break: break-all;
+    }
+
+    .url-box a { color: var(--success); text-decoration: underline; }
+
+    /* ── FOOTER ───────────────────────────────────────── */
+    .footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.72rem;
+      color: #9a8e7e;
+      letter-spacing: 0.04em;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+
+    .stack-pills {
+      display: flex;
+      justify-content: center;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+    }
+
+    .pill {
+      font-size: 0.65rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 2px;
+      background: rgba(26,74,138,0.08);
+      border: 1px solid rgba(26,74,138,0.15);
+      color: var(--accent);
+    }
+
+    /* ── ANIMATIONS ───────────────────────────────────── */
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: none; } }
+    @keyframes fadeUp   { from { opacity: 0; transform: translateY(16px);  } to { opacity: 1; transform: none; } }
+    @keyframes spin     { to { transform: rotate(360deg); } }
+
+    /* ── RESPONSIVE ───────────────────────────────────── */
+    @media (max-width: 480px) {
+      .card { padding: 1.75rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Portal <span>Pendaftaran</span><br>Pegawai Baru</h1>
+    <p class="subtitle">Isi formulir berikut dengan data diri yang valid untuk memulai proses seleksi</p>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="card">
+    <div class="section-label">Data Diri Pelamar</div>
+
+    <!-- INPUT NAMA -->
+    <div class="form-group">
+      <label for="nama">Nama Lengkap <span class="req">*</span></label>
+      <input type="text" id="nama" name="nama"
+             placeholder="Contoh: Budi Santoso"
+             autocomplete="name" required />
+    </div>
+
+    <!-- INPUT EMAIL -->
+    <div class="form-group">
+      <label for="email">Alamat Email <span class="req">*</span></label>
+      <input type="email" id="email" name="email"
+             placeholder="Contoh: budi@email.com"
+             autocomplete="email" required />
+    </div>
+
+    <!-- UPLOAD BERKAS -->
+    <div class="file-section">
+      <div class="section-label">Berkas Pendukung</div>
+
+      <label>Foto KTP / CV <span class="req">*</span></label>
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="berkas" name="berkas"
+               accept="image/jpeg,image/png,image/jpg,application/pdf" />
+        <div class="dz-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div class="dz-title">Klik atau seret file ke sini</div>
+        <div class="dz-sub">JPG, PNG, PDF · Maks. 5 MB</div>
+      </div>
+
+      <!-- PREVIEW FILE YANG DIPILIH -->
+      <div class="file-preview" id="filePreview">
+        <img class="file-thumb" id="fileThumb" src="" alt="" />
+        <div class="file-info">
+          <div class="file-name" id="fileName">—</div>
+          <div class="file-size" id="fileSize">—</div>
+        </div>
+        <button class="file-remove" id="fileRemove" title="Hapus file">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- SUBMIT BUTTON -->
+    <button class="btn-submit" id="btnSubmit">
+      <span class="spinner" id="spinner"></span>
+      <span id="btnText">Kirim Pendaftaran</span>
+    </button>
+
+    <!-- ALERT AREA -->
+    <div class="alert" id="alertBox">
+      <div class="alert-title" id="alertTitle"></div>
+      <div id="alertMsg"></div>
+      <div class="url-box" id="urlBox" style="display:none">
+        URL File: <a id="urlLink" href="" target="_blank"></a>
+      </div>
+    </div>
+  </div>
+
+
+
+</div>
+
+<script>
+// ============================================================
+//  JAVASCRIPT FRONTEND — Logic Form & Upload
+// ============================================================
+
+const dropzone   = document.getElementById('dropzone');
+const fileInput  = document.getElementById('berkas');
+const filePreview = document.getElementById('filePreview');
+const fileThumb  = document.getElementById('fileThumb');
+const fileName   = document.getElementById('fileName');
+const fileSize   = document.getElementById('fileSize');
+const fileRemove = document.getElementById('fileRemove');
+const btnSubmit  = document.getElementById('btnSubmit');
+const btnText    = document.getElementById('btnText');
+const spinner    = document.getElementById('spinner');
+const alertBox   = document.getElementById('alertBox');
+const alertTitle = document.getElementById('alertTitle');
+const alertMsg   = document.getElementById('alertMsg');
+const urlBox     = document.getElementById('urlBox');
+const urlLink    = document.getElementById('urlLink');
+
+// ── PREVIEW FILE SAAT DIPILIH ─────────────────────────────
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  showFilePreview(file);
+});
+
+// ── DRAG & DROP ───────────────────────────────────────────
+dropzone.addEventListener('dragover',  (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', ()  => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    // Pasang file ke input secara programatis
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    fileInput.files = dt.files;
+    showFilePreview(file);
+  }
+});
+
+function showFilePreview(file) {
+  fileName.textContent = file.name;
+  fileSize.textContent = formatBytes(file.size);
+
+  // Tampilkan thumbnail jika berupa gambar
+  if (file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = (e) => { fileThumb.src = e.target.result; };
+    reader.readAsDataURL(file);
+  } else {
+    // Icon PDF jika bukan gambar
+    fileThumb.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text y="18" font-size="16">📄</text></svg>';
+  }
+
+  filePreview.classList.add('show');
+}
+
+// ── HAPUS FILE ────────────────────────────────────────────
+fileRemove.addEventListener('click', () => {
+  fileInput.value = '';
+  filePreview.classList.remove('show');
+  fileThumb.src = '';
+});
+
+// ── FORMAT UKURAN FILE ────────────────────────────────────
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+// ── SUBMIT FORM ───────────────────────────────────────────
+btnSubmit.addEventListener('click', async () => {
+  // Ambil nilai input
+  const nama  = document.getElementById('nama').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const file  = fileInput.files[0];
+
+  // Validasi sederhana di sisi client
+  if (!nama || !email || !file) {
+    showAlert('error', 'Form Tidak Lengkap', 'Pastikan semua kolom sudah diisi dan file sudah dipilih.');
+    return;
+  }
+
+  // Tampilkan loading state
+  setLoading(true);
+  hideAlert();
+
+  // Buat FormData — format yang tepat untuk mengirim file lewat HTTP
+  // FormData secara otomatis mengatur Content-Type: multipart/form-data
+  const formData = new FormData();
+  formData.append('nama',   nama);
+  formData.append('email',  email);
+  formData.append('berkas', file); // ← Nama field 'berkas' harus cocok dengan upload.single('berkas') di server!
+
+  try {
+    // Kirim ke backend menggunakan Fetch API (modern, promise-based)
+    const response = await fetch('/daftar', {
+      method: 'POST',
+      body: formData
+      // JANGAN set Content-Type manual! Biarkan browser yang mengisinya
+      // agar boundary multipart terbentuk dengan benar
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      // ✅ SUKSES — Tampilkan pesan dan URL file
+      showAlert('success', '✅ Pendaftaran Berhasil!',
+        `Data ${result.data.nama} telah tersimpan di database.`);
+      urlLink.textContent = result.data.ktp_url;
+      urlLink.href = result.data.ktp_url;
+      urlBox.style.display = 'block';
+
+      // Reset form setelah sukses
+      document.getElementById('nama').value  = '';
+      document.getElementById('email').value = '';
+      fileInput.value = '';
+      filePreview.classList.remove('show');
+    } else {
+      showAlert('error', '❌ Gagal', result.message);
+    }
+
+  } catch (err) {
+    showAlert('error', '❌ Kesalahan Jaringan',
+      'Tidak dapat terhubung ke server. Pastikan server berjalan.');
+  } finally {
+    setLoading(false);
+  }
+});
+
+// ── UTILITY FUNCTIONS ─────────────────────────────────────
+function setLoading(loading) {
+  btnSubmit.disabled = loading;
+  spinner.style.display = loading ? 'block' : 'none';
+  btnText.textContent = loading ? 'Sedang Memproses...' : 'Kirim Pendaftaran';
+}
+
+function showAlert(type, title, msg) {
+  alertBox.className = 'alert ' + type;
+  alertTitle.textContent = title;
+  alertMsg.textContent = msg;
+  if (type === 'error') urlBox.style.display = 'none';
+}
+
+function hideAlert() {
+  alertBox.className = 'alert';
+  alertBox.style.display = 'none';
+  urlBox.style.display = 'none';
+}
+</script>
+</body>
+</html>
